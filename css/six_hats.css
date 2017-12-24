@@ -1,0 +1,66 @@
+
+#main-heading{
+	margin-bottom: 6%;
+}
+
+#select-option-btn-group{
+	margin-top: 5%;
+	margin-left:32%;
+	margin-bottom: 5%;
+}
+
+#option-side{height:200px;}
+
+#counter{font-size: 30px;}
+
+#hat-side{height:300px;}
+
+#hat{
+	background: grey;
+  height: inherit;
+  width: 100%;
+  border: 1px black solid;
+}
+
+h3{text-decoration: underline;}
+
+#color-selection{
+	/*height:80px;
+	width: 55px;*/
+}
+
+#red-square, #green-square,
+ #yellow-square, #black-square,
+ #blue-square, #white-square {
+	height: 25px;
+	width: 25px;
+	border: 1px black solid;
+	margin: 10px;
+}
+
+#red-square{background:red;}
+#green-square{background:green;}
+#yellow-square{background:yellow;}
+#black-square{background:black;}
+#blue-square{background:blue;}
+#white-square{background:white;}
+
+#hideCounterLabel{font-weight: normal;}
+/*#hiderCounter{margin-left: 40px;}*/
+#message{
+	width:100%;
+	text-align: center;
+}
+
+#sequence{
+	width:345px;
+	margin-bottom: 5px;
+}
+
+.margin-to-bottom{
+	margin-bottom:20px;
+}
+
+.time-input{width:40px;}
+
+.correct-for-label-size{margin-left:2px;}

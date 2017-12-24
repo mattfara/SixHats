@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<link rel="stylesheet" href="css/six_hats.css" />
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
+</head>
+
+<body>
+
+	<audio id="start-bell">
+  <source src="resources/start-bell.wav" type="audio/wav">
+</audio>
+
+<audio id="end-bell">
+<source src="resources/end-bell.wav" type="audio/wav">
+</audio>
+
+	<div class="container">
+		<div class="row">
+			<h1 class="text-center" id="main-heading">Six Thinking Hats</h1>
+			<img class="center-block" src="resources/six_hats.jpg">
+		</div>
+		<div class="row">
+
+			<!-- TOP BUTTON GROUP -->
+
+			<div class="btn-group" class="pagination-centered" id="select-option-btn-group">
+				<button class="btn btn-default" type="button" id="showSequenceOptions">Sequence of Hats</button>
+				<button class="btn btn-basic" type="button" id="showTimedOptions">Timed Random Hats</button>
+				<button class="btn btn-default" type="button" id="getRandomHat">One Random Hat</button>
+			</div>
+
+			<!-- MENU PANEL -->
+			<div class="col-md-9" id="option-side">
+				<form>
+					<h3 id="functionality">Sequence of Hats</h3>
+					<div id="options-form-panel" class="col-md-4">
+						<fieldset>
+							<legend id="options-form-legend">Time to switch</legend>
+							<div id="fixed-time" class="margin-to-bottom canHaveErrors">
+								<input id="fixed-interval-radio" type="radio" name="interval-type" value="fixed-interval" checked>
+								<span>Fixed Interval</span><br>
+								<label for="hours">H: </label>
+								<input id="hours" type="number" name="hours" min="0" value="0" class="time-input correct-for-label-size" required><br>
+								<label for="minutes">M:</label>
+								<input id="minutes" type="number" name="minutes" min="0" value="1" class="time-input" required><br>
+								<label for="seconds">S: </label>
+								<input id="seconds" type="number" name="seconds" min="0" value="0" class="time-input correct-for-label-size" required>
+								</input>
+							</div>
+							<div id="random-time" class="canHaveErrors">
+								<input id="random-interval-radio" type="radio" name="interval-type" value="random-interval" >
+								<span>Random interval</span> <br> between <input type="number" placeholder="10" id="lower-random-interval-limit" class="time-input" value="1" required/> and <input type="number" placeholder="90" id="upper-random-interval-limit" class="time-input" value="2" required
+								/>
+								<p>minutes</p>
+								</input>
+							</div>
+						</fieldset>
+					</div>
+
+					<div class="col-md-2">
+						<div id="color-menu-panel">
+							<fieldset>
+								<legend>Colors</legend>
+								<div class="col-md-6">
+									<div id="red-square"></div>
+									<div id="green-square"></div>
+									<div id="yellow-square"></div>
+								</div>
+								<div class="col-md-6">
+									<div id="black-square"></div>
+									<div id="blue-square"></div>
+									<div id="white-square"></div>
+								</div>
+							</fieldset>
+						</div>
+					</div>
+
+					<div id="action-form-panel" class="col-md-6">
+						<fieldset>
+							<legend id="action-form-legend">
+								Sequence
+							</legend>
+							<div id="fixed-sequence-instructions" class="canHaveErrors">
+								<p>Click boxes or type below</p>
+								<input type="text" id="sequence" placeholder="Example: blue, white, red, green, black, white, blue" pattern="[Rr]ed|[Ww]hite|[Gg]reen|[Yy]ellow|[Bb]lack|[Bb]lue"
+								/>
+							</div>
+							<div id="random-sequence-instructions" style="display:none;">
+								<p style="margin-bottom:35px;">Click to begin</p>
+							</div>
+								<div class="margin-to-bottom btn-group">
+									<span id="btns-for-fixed-sequence">
+										<button id="btn-for-starting-fixed-sequence" type="button" class="btn btn-default">Start Fixed Sequence</button>
+									</span>
+									<span id="btns-for-random-sequence" style="display:none">
+										<button id="btn-for-starting-random-sequence" type="button" class="btn btn-default">Start Random Sequence</button>
+									</span>
+									<span><button id="pause-btn" type="button" class="btn btn-default" disabled>Pause</button></span>
+									<span><button id="stop-btn" type="button" class="btn btn-default" disabled>Stop</button></span>
+									<span><button id="skip-btn" type="button"
+										class="btn btn-default" disabled>Skip</button></span>
+								</div>
+						</fieldset>
+						</div>
+				</form>
+				</div>
+
+				<div class="col-md-3" id="hat-side">
+					<div>
+						<input type="text" id="message" readonly/>
+					</div>
+					<div id="hat"></div>
+					<div>
+						<legend>Counter
+
+							<input type="checkbox" id="hideCounter" style="margin-left:40px;"/>
+							<label id="hideCounterLabel" for="hideCounter">Hide</label>
+						</legend>
+						<p id="counter">0h 0m 0s</p>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<script src="js/six_hats.js"></script>
+</body>
+
+</html>

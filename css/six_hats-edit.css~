@@ -1,0 +1,46 @@
+
+#hat{
+  height: inherit;
+  width: 100%;
+  border: 1px black solid;
+}
+
+#timed-hat {
+  height: inherit;
+  width: 100%;
+  border: 1px black solid;
+}
+
+#static-hat {
+  height: inherit;
+  width: 100%;
+  border: 1px black solid;
+}
+
+#main-heading{
+	margin-bottom: 6%;
+}
+
+#select-option-btn-group{
+	margin-top: 5%;
+	margin-left:40%;
+	margin-bottom: 5%;
+}
+
+/*
+#timed-side{
+	border: 1px solid black;
+}
+
+#static-side{
+	border: 1px solid black;
+}
+*/
+
+#timed-hat-left-side{height: 200px;}
+
+#timed-hat-right-side{height: 300px;}
+
+#static-hat-left-side{height: 200px;}
+
+#static-hat-right-side{height: 300px;}

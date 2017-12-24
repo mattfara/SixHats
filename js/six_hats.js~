@@ -1,0 +1,119 @@
+
+
+$('#set-btn').on("click", function() {
+
+	$(this).prop('disabled', true);
+
+	$('#stop-btn').data('continue', true);
+  var hours = parseInt($('#hours').val());
+  var minutes = parseInt($('#minutes').val());
+  var seconds = parseInt($('#seconds').val());
+  
+  seconds = calculateSeconds(hours, minutes, seconds);
+
+  countdown(seconds);
+});
+
+$('#stop-btn').on("click", function(){
+	$(this).data('continue', false);
+  $('#set-btn').prop('disabled', false);
+})
+
+
+function calculateSeconds(hours, minutes, seconds) {
+  var secs = 0;
+  secs += seconds;
+  secs += minutes * 60;
+  secs += hours * 60 * 60
+  console.log("in calculation: " + secs);
+  return secs
+}
+
+function countdown(seconds) {
+
+  randomlyGrabAHat();
+	var audio = new Audio('');
+  var count = seconds + 1;
+
+
+  var timerId = setInterval(function() {
+  
+  	var hideTimerVal = $('#hideCounter:checked').val();
+    
+    if (hideTimerVal){
+    	$('#counter').hide();
+    } else {
+    	$('#counter').show();
+    }
+  
+  	var shouldKeepCounting = $('#stop-btn').data("continue");
+    console.log("Should keep counting: " + shouldKeepCounting);
+
+    if (shouldKeepCounting) {
+      count--;
+
+      h = Math.floor((count % (60 * 60 * 24)) / (60 * 60));
+      m = Math.floor((count % (60 * 60)) / (60));
+      s = Math.floor(count % 60);
+
+      // should use jQuery here
+      document.getElementById("counter").innerHTML = h + "h " + m + "m " + s + "s ";
+
+      console.log(count);
+
+
+      if (count == 0) {
+        randomlyGrabAHat();
+        audio.play();
+        count = seconds + 1;
+      }
+
+      //if(stopCount){
+      //clearInterval(timerId);
+      //}
+    } else {clearInterval(timerId);}
+  }, 1000);
+}
+
+function randomlyGrabAHat() {
+  var hatNumber = randomlySelectNumberForHat();
+  getHat(hatNumber);
+}
+
+
+
+function randomlySelectNumberForHat() {
+  return Math.floor((Math.random() * 6) + 1);
+}
+
+
+function getHat(n) {
+  switch (n) {
+    case 1:
+      setHatColorOnPage('white');
+      break;
+    case 2:
+      setHatColorOnPage('red');
+      break;
+    case 3:
+      setHatColorOnPage('green');
+      break;
+    case 4:
+      setHatColorOnPage('blue');
+      break;
+    case 5:
+      setHatColorOnPage('yellow');
+      break;
+    case 6:
+      setHatColorOnPage('black');
+      break;
+    default:
+      console.log('big problems');
+      break;
+  }
+}
+
+function setHatColorOnPage(color) {
+  $('#hat').css('background-color', color);
+}
+
