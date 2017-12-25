@@ -116,8 +116,8 @@ function countdownForRandomSequence(seconds) {
       removeStoppedAttr();
     } else {
       count--;
-
-      calculateCounterValuesAndDisplay(count);
+      if (!shouldSkip)
+        calculateCounterValuesAndDisplay(count);
 
       if (count === 0 || shouldSkip) {
         clearInterval(interval);
