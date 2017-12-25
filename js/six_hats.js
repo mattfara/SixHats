@@ -53,7 +53,8 @@ function countdownForFixedSequence(seconds) {
     } else {
       count--;
 
-      calculateCounterValuesAndDisplay(count);
+      if (!shouldSkip)
+        calculateCounterValuesAndDisplay(count);
 
       if (count === 0 || shouldSkip) {
         clearInterval(interval);
