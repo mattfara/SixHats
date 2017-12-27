@@ -1,9 +1,9 @@
 $(document).ready(function(){
-  $('#functionality').prop("sequenceOption", true);
+  $('#functionality').prop("usingFixedSequence", true);
   }
 );
 
-//check state of the forms, sequence textbox
+
 $('#btn-for-starting-fixed-sequence').on("click", function() {
   if (areFormsValid()) {
     removeRedBorderFromDiv();
@@ -12,7 +12,7 @@ $('#btn-for-starting-fixed-sequence').on("click", function() {
       giveDivRedBorder('#fixed-sequence-instructions');
     } else {
       removeRedBorderFromDiv();
-      prepareButtonsAndAttributesForStart(); //not sure about this one
+      prepareButtonsAndAttributesForStart();
       var sequence, seconds, hat;
 
       if (isCounterPaused()) {
@@ -21,11 +21,8 @@ $('#btn-for-starting-fixed-sequence').on("click", function() {
         unpause();
       } else {
         sequence = getSequenceFromTextboxVal();
-        console.log("BTN: The sequence from textbox: " + sequence);
         sequence = standardizeSequenceAndParseToArray(sequence);
-        console.log("BTN: The sequence after processing: " + sequence);
         hat = sequence.shift();
-        console.log("BTN: Hat after shift: " + hat);
         saveSequenceAttrOnSequenceTextbox(sequence);
         seconds = isFixedIntervalChecked() ? getTotalSecondsFromFixedIntervalForm() : generateRandomTimeFromMinuteRange()
       }
@@ -43,7 +40,7 @@ function countdownForFixedSequence(seconds) {
   var count = seconds + 1;
 
   var interval = setInterval(function() {
-    var shouldSkip = doesSkipBtnHaveAttr();
+    var shouldSkip = wasSkipClicked();
 
     if (isCounterPaused()) {
       clearInterval(interval);
@@ -58,10 +55,8 @@ function countdownForFixedSequence(seconds) {
 
       if (count === 0 || shouldSkip) {
         clearInterval(interval);
-        var sequence = getSequenceAttrFromSequenceTextbox(); //maybe try passing the first member of array here
-        console.log("The sequence inside of counting: " + sequence);
+        var sequence = getSequenceAttrFromSequenceTextbox();
         sequence = standardizeSequenceAndParseToArray(sequence);
-        console.log("Inside of counting, The sequence after processing: " + sequence);
 
         var seconds = isFixedIntervalChecked() ? getTotalSecondsFromFixedIntervalForm() : generateRandomTimeFromMinuteRange()
         turnOffSkip();
@@ -71,7 +66,6 @@ function countdownForFixedSequence(seconds) {
           dingEndBell();
         } else {
           var hat = sequence.shift();
-          console.log("Inside counting, The hat: " + hat);
           saveSequenceAttrOnSequenceTextbox(sequence);
           displayHatAndPassTimeToCountdown(hat, seconds);
         }
@@ -107,7 +101,7 @@ function countdownForRandomSequence(seconds) {
   var count = seconds + 1;
 
   var interval = setInterval(function() {
-    var shouldSkip = doesSkipBtnHaveAttr();
+    var shouldSkip = wasSkipClicked();
 
     if (isCounterPaused()) {
       clearInterval(interval);
@@ -157,22 +151,14 @@ function calculateCounterValuesAndDisplay(count){
 }
 
 function isUsingFixedSequence(){
-  return $('#functionality').prop("sequenceOption") == true;
+  return $('#functionality').prop("usingFixedSequence") == true;
 }
 
-
-//might conisder adding the sequence textbox checker here, changing name first
-//to be consistent
 function areFormsValid() {
+  //bitwise & will not shortcircuit if first operand is false, thus allowing for both divs to get red border
   return isFixedIntervalFormValid() & isRandomIntervalFormValid()
 }
 
-//rename to isSequenceFormValid
-//switch retur statement to > 0
-//fix elsewhere as opposite
-//make sure everything still works
-// add this method to above
-// make sure still works
 function isSequenceTextboxEmpty() {
   var content = $('#sequence').val();
   jQuery.trim(content);
@@ -298,7 +284,6 @@ function getSequenceAttrFromSequenceTextbox() {
   return $('#sequence').attr("sequenceArray");
 }
 
-//color square clicks
 $('#red-square').on("click", function() {
   addColorToSequenceTextbox("red");
 });
@@ -416,7 +401,7 @@ function isCounterPaused() {
   return document.getElementById("counter").hasAttribute("paused");
 }
 
-function doesSkipBtnHaveAttr() {
+function wasSkipClicked() {
   return document.getElementById("skip-btn").hasAttribute("skip");
 }
 
@@ -475,13 +460,12 @@ function setHatColorOnPage(color) {
   $('#hat').css('background-color', color);
 }
 
-//choosing the procedure
 
 $('#showSequenceOptions').on("click", function() {
   $('#functionality').text("Sequence of Hats");
   $('#color-menu-panel').show();
   $('#action-form-legend').text("Sequence");
-  $('#functionality').prop("sequenceOption", true);
+  $('#functionality').prop("usingFixedSequence", true);
   reset();
 
   $('#btns-for-fixed-sequence').show();
@@ -494,7 +478,7 @@ $('#showTimedOptions').on("click", function() {
   $('#functionality').text("Timed Random Hats");
   $('#color-menu-panel').hide();
   $('#action-form-legend').text("Action");
-  $('#functionality').prop("sequenceOption", false);
+  $('#functionality').prop("usingFixedSequence", false);
   reset();
 
   $('#btns-for-fixed-sequence').hide();
@@ -511,7 +495,6 @@ $('#getRandomHat').on("click", function() {
 });
 
 
-//random sequence of hats
 
 function randomlySelectNumberForHat() {
   return Math.floor((Math.random() * 6) + 1);
@@ -541,8 +524,6 @@ function prepareButtonsAndAttributesForStart() {
   enablePauseBtn();
   removeStoppedAttr();
 }
-
-//for random interval
 
 function getTotalSecondsFromCounter() {
 
