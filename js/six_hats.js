@@ -11,7 +11,6 @@ $('#btn-for-starting-fixed-sequence').on("click", function() {
       postMessageToUser("Sequence empty");
       giveDivRedBorder('#fixed-sequence-instructions');
     } else {
-      removeRedBorderFromDiv();
       prepareButtonsAndAttributesForStart();
       var sequence, seconds, hat;
 
@@ -34,7 +33,231 @@ $('#btn-for-starting-fixed-sequence').on("click", function() {
   }
 });
 
+function areFormsValid() {
+  //bitwise & will not shortcircuit if first operand is false, thus allowing for both divs to get red border
+  return isFixedIntervalFormValid() & isRandomIntervalFormValid()
+}
 
+function isFixedIntervalFormValid() {
+  var hoursEmpty = $('#hours').val() === "";
+  var minutesEmpty = $('#minutes').val() === "";
+  var secondsEmpty = $('#seconds').val() === "";
+
+  if (hoursEmpty || minutesEmpty || secondsEmpty) {
+    $('#message').val('Fill all fields');
+    giveDivRedBorder('#fixed-time');
+    return false;
+  }
+  return true;
+}
+
+function isRandomIntervalFormValid() {
+  var lowerLimit = $('#lower-random-interval-limit').val();
+  var upperLimit = $('#upper-random-interval-limit').val();
+
+  if (lowerLimit === "" || upperLimit === "") {
+    $('#message').val('Fill all fields');
+    giveDivRedBorder('#random-time');
+    return false;
+  }
+
+  if (lowerLimit >= upperLimit) {
+    $('#message').val('Lower < Upper!');
+    giveDivRedBorder('#random-time');
+    return false;
+  }
+  return true;
+}
+
+function giveDivRedBorder(divId){
+  $(divId).css('border', '2px solid red');
+}
+
+function removeRedBorderFromDiv(){
+  $('.canHaveErrors').css('border', 0);
+}
+
+function isSequenceTextboxEmpty() {
+  var content = $('#sequence').val();
+  jQuery.trim(content);
+  return content.length === 0;
+}
+
+function postMessageToUser(string) {
+  $('#message').val(string);
+}
+
+
+
+function prepareButtonsAndAttributesForStart() {
+  disableStartBtn();
+  enableSkipBtn();
+  enableStopBtn();
+  enablePauseBtn();
+  removeStoppedAttr();
+}
+
+function disableStartBtn() {
+  $('#btn-for-starting-fixed-sequence').prop('disabled', true);
+  $('#btn-for-starting-random-sequence').prop('disabled', true);
+}
+
+function enableStartBtn() {
+  $('#btn-for-starting-fixed-sequence').prop('disabled', false);
+  $('#btn-for-starting-random-sequence').prop('disabled', false);
+}
+
+function disableSkipBtn() {
+  $('#skip-btn').prop('disabled', true);
+}
+
+function enableSkipBtn() {
+  $('#skip-btn').prop('disabled', false);
+}
+
+function disableStopBtn() {
+  $('#stop-btn').prop('disabled', true);
+}
+
+function enableStopBtn() {
+  $('#stop-btn').prop('disabled', false);
+}
+
+function disablePauseBtn() {
+  $('#pause-btn').prop('disabled', true);
+}
+
+function enablePauseBtn() {
+  $('#pause-btn').prop('disabled', false);
+}
+
+function removeStoppedAttr() {
+  $('#stop-btn').removeAttr('stopped');
+}
+
+function isCounterPaused() {
+  return document.getElementById("counter").hasAttribute("paused");
+}
+
+function getCurrentHatColor(){
+  return $('#hat').css("background-color");
+}
+
+function getTotalSecondsFromCounter() {
+
+  var textInCounter = $('#counter').text();
+
+  var h = parseInt(textInCounter.match(/[0-9]+(?=h)/));
+  var m = parseInt(textInCounter.match(/[0-9]+(?=m)/));
+  var s = parseInt(textInCounter.match(/[0-9]+(?=s)/));
+
+  return calculateSeconds(h, m, s);
+}
+
+function unpause() {
+  $('#counter').removeAttr("paused");
+}
+
+function getSequenceFromTextboxVal() {
+  return $('#sequence').val();
+}
+
+function standardizeSequenceAndParseToArray(sequence) {
+  return sequence.toLowerCase().match(/red|white|green|yellow|black|blue/g);
+}
+
+function saveSequenceAttrOnSequenceTextbox(sequenceArray) {
+  $('#sequence').attr("sequenceArray", sequenceArray);
+}
+
+function isFixedIntervalChecked() {
+  return $('input:radio[name=interval-type]:checked').val() === "fixed-interval";
+}
+
+function getTotalSecondsFromFixedIntervalForm() {
+
+  var h = parseInt($('#hours').val());
+  var m = parseInt($('#minutes').val());
+  var s = parseInt($('#seconds').val());
+
+  return calculateSeconds(h, m, s);
+}
+
+function calculateSeconds(hours, minutes, seconds) {
+  seconds += minutes * 60;
+  seconds += hours * 60 * 60;
+  return seconds;
+}
+
+function generateRandomTimeFromMinuteRange() {
+  var min = parseFloat($('#lower-random-interval-limit').val());
+  var max = parseFloat($('#upper-random-interval-limit').val());
+
+  var minSeconds = Math.round(min * 60);
+  var maxSeconds = Math.round(max * 60);
+
+  return Math.floor(Math.random() * (maxSeconds - minSeconds + 1)) + minSeconds;
+}
+
+function clearMessageToUser() {
+  $('#message').val("");
+}
+
+function makeSequenceTextboxReadOnly() {
+  $('#sequence').prop('readonly', true);
+}
+
+function displayHatAndPassTimeToCountdown(hat, seconds) {
+  setHatColorOnPage(hat);
+  setHatMonikerOnPage(hat);
+  dingStartBell();
+  isUsingFixedSequence() ? countdownForFixedSequence(seconds) : countdownForRandomSequence(seconds)
+}
+
+function setHatMonikerOnPage(hat){
+  switch(hat){
+    case "red":
+    case "rgb(255, 0, 0)":
+      postMessageToUser("The Empath");
+      break;
+    case "blue":
+    case "rgb(0, 0, 255)":
+      postMessageToUser("The Manager");
+      break;
+    case "yellow":
+    case "rgb(255, 255, 0)":
+      postMessageToUser("The Optimist");
+      break;
+    case "black":
+    case "rgb(0, 0, 0)":
+      postMessageToUser("The Skeptic");
+      break;
+    case "white":
+    case "rgb(255, 255, 255)":
+      postMessageToUser("The Detective");
+      break;
+    case "green":
+    case "rgb(0, 128, 0)":
+      postMessageToUser("The Muse");
+      break;
+    default:
+        console.log("No matching color found");
+        break;
+  }
+}
+
+function dingStartBell() {
+  document.getElementById('start-bell').play();
+}
+
+function dingEndBell() {
+  document.getElementById('end-bell').play();
+}
+
+function isUsingFixedSequence(){
+  return $('#functionality').prop("usingFixedSequence") == true;
+}
+//TODO finish formatting functions -- stopped here
 function countdownForFixedSequence(seconds) {
 
   var count = seconds + 1;
@@ -129,16 +352,9 @@ function countdownForRandomSequence(seconds) {
   }, 1000);
 }
 
-function displayHatAndPassTimeToCountdown(hat, seconds) {
-  setHatColorOnPage(hat);
-  setHatMonikerOnPage(hat);
-  dingStartBell();
-  isUsingFixedSequence() ? countdownForFixedSequence(seconds) : countdownForRandomSequence(seconds)
-}
 
-function getCurrentHatColor(){
-  return $('#hat').css("background-color");
-}
+
+
 
 function calculateCounterValuesAndDisplay(count){
   var h, m, s;
@@ -150,59 +366,18 @@ function calculateCounterValuesAndDisplay(count){
   $('#counter').text(h + "h " + m + "m " + s + "s ");
 }
 
-function isUsingFixedSequence(){
-  return $('#functionality').prop("usingFixedSequence") == true;
-}
 
-function areFormsValid() {
-  //bitwise & will not shortcircuit if first operand is false, thus allowing for both divs to get red border
-  return isFixedIntervalFormValid() & isRandomIntervalFormValid()
-}
 
-function isSequenceTextboxEmpty() {
-  var content = $('#sequence').val();
-  jQuery.trim(content);
-  return content.length === 0;
-}
 
-function isFixedIntervalFormValid() {
-  var hoursEmpty = $('#hours').val() === "";
-  var minutesEmpty = $('#minutes').val() === "";
-  var secondsEmpty = $('#seconds').val() === "";
 
-  if (hoursEmpty || minutesEmpty || secondsEmpty) {
-    $('#message').val('Fill all fields');
-    giveDivRedBorder('#fixed-time');
-    return false;
-  }
-  return true;
-}
 
-function isRandomIntervalFormValid() {
-  var lowerLimit = $('#lower-random-interval-limit').val();
-  var upperLimit = $('#upper-random-interval-limit').val();
 
-  if (lowerLimit === "" || upperLimit === "") {
-    $('#message').val('Fill all fields');
-    giveDivRedBorder('#random-time');
-    return false;
-  }
 
-  if (lowerLimit >= upperLimit) {
-    $('#message').val('Lower < Upper!');
-    giveDivRedBorder('#random-time');
-    return false;
-  }
-  return true;
-}
 
-function removeRedBorderFromDiv(){
-  $('.canHaveErrors').css('border', 0);
-}
 
-function giveDivRedBorder(divId){
-  $(divId).css('border', '2px solid red');
-}
+
+
+
 
 $('#fixed-time').on("click", function() {
   $('#fixed-interval-radio').prop('checked', true);
@@ -213,47 +388,11 @@ $('#random-time').on("click", function() {
 });
 
 
-function disablePauseBtn() {
-  $('#pause-btn').prop('disabled', true);
-}
 
-function enablePauseBtn() {
-  $('#pause-btn').prop('disabled', false);
-}
 
-function disableStartBtn() {
-  $('#btn-for-starting-fixed-sequence').prop('disabled', true);
-  $('#btn-for-starting-random-sequence').prop('disabled', true);
-}
 
-function enableStartBtn() {
-  $('#btn-for-starting-fixed-sequence').prop('disabled', false);
-  $('#btn-for-starting-random-sequence').prop('disabled', false);
-}
 
-function enableStopBtn() {
-  $('#stop-btn').prop('disabled', false);
-}
 
-function disableStopBtn() {
-  $('#stop-btn').prop('disabled', true);
-}
-
-function enableSkipBtn() {
-  $('#skip-btn').prop('disabled', false);
-}
-
-function disableSkipBtn() {
-  $('#skip-btn').prop('disabled', true);
-}
-
-function postMessageToUser(string) {
-  $('#message').val(string);
-}
-
-function clearMessageToUser() {
-  $('#message').val("");
-}
 
 
 
@@ -262,9 +401,7 @@ function isSequenceAttrEmpty() {
   return sequenceArray.length === 0;
 }
 
-function getSequenceFromTextboxVal() {
-  return $('#sequence').val();
-}
+
 
 function addColorToSequenceTextbox(color) {
   var currentContent = getSequenceFromTextboxVal();
@@ -272,13 +409,9 @@ function addColorToSequenceTextbox(color) {
   $('#sequence').val(updatedContent);
 }
 
-function standardizeSequenceAndParseToArray(sequence) {
-  return sequence.toLowerCase().match(/red|white|green|yellow|black|blue/g);
-}
 
-function saveSequenceAttrOnSequenceTextbox(sequenceArray) {
-  $('#sequence').attr("sequenceArray", sequenceArray);
-}
+
+
 
 function getSequenceAttrFromSequenceTextbox() {
   return $('#sequence').attr("sequenceArray");
@@ -308,41 +441,9 @@ $('#white-square').on("click", function() {
   addColorToSequenceTextbox("white");
 });
 
-function isFixedIntervalChecked() {
-  return $('input:radio[name=interval-type]:checked').val() === "fixed-interval";
-}
 
-function setHatMonikerOnPage(hat){
-  switch(hat){
-    case "red":
-    case "rgb(255, 0, 0)":
-      postMessageToUser("The Empath");
-      break;
-    case "blue":
-    case "rgb(0, 0, 255)":
-      postMessageToUser("The Manager");
-      break;
-    case "yellow":
-    case "rgb(255, 255, 0)":
-      postMessageToUser("The Optimist");
-      break;
-    case "black":
-    case "rgb(0, 0, 0)":
-      postMessageToUser("The Skeptic");
-      break;
-    case "white":
-    case "rgb(255, 255, 255)":
-      postMessageToUser("The Detective");
-      break;
-    case "green":
-    case "rgb(0, 128, 0)":
-      postMessageToUser("The Muse");
-      break;
-    default:
-        console.log("No matching color found");
-        break;
-  }
-}
+
+
 
 function wasStopBtnClicked() {
   return document.getElementById("stop-btn").hasAttribute("stopped");
@@ -369,9 +470,7 @@ $('#stop-btn').on("click", function() {
   postMessageToUser("Stopped");
 });
 
-function removeStoppedAttr() {
-  $('#stop-btn').removeAttr('stopped');
-}
+
 
 function resetCounter() {
   $('#counter').text("0h 0m 0s");
@@ -393,13 +492,9 @@ $('#pause-btn').on("click", function() {
   postMessageToUser("Paused");
 });
 
-function unpause() {
-  $('#counter').removeAttr("paused");
-}
 
-function isCounterPaused() {
-  return document.getElementById("counter").hasAttribute("paused");
-}
+
+
 
 function wasSkipClicked() {
   return document.getElementById("skip-btn").hasAttribute("skip");
@@ -413,19 +508,9 @@ $('#hideCounter').on("click", function() {
   $('#counter').toggle();
 });
 
-function calculateSeconds(hours, minutes, seconds) {
-  seconds += minutes * 60;
-  seconds += hours * 60 * 60;
-  return seconds;
-}
 
-function dingStartBell() {
-  document.getElementById('start-bell').play();
-}
 
-function dingEndBell() {
-  document.getElementById('end-bell').play();
-}
+
 
 function randomlyGrabHat() {
   var hatNumber = randomlySelectNumberForHat();
@@ -500,48 +585,8 @@ function randomlySelectNumberForHat() {
   return Math.floor((Math.random() * 6) + 1);
 }
 
-function makeSequenceTextboxReadOnly() {
-  $('#sequence').prop('readonly', true);
-}
+
 
 function makeSequenceTextboxWritable() {
   $('#sequence').prop('readonly', true);
-}
-
-function getTotalSecondsFromFixedIntervalForm() {
-
-  var h = parseInt($('#hours').val());
-  var m = parseInt($('#minutes').val());
-  var s = parseInt($('#seconds').val());
-
-  return calculateSeconds(h, m, s);
-}
-
-function prepareButtonsAndAttributesForStart() {
-  disableStartBtn();
-  enableSkipBtn();
-  enableStopBtn();
-  enablePauseBtn();
-  removeStoppedAttr();
-}
-
-function getTotalSecondsFromCounter() {
-
-  var textInCounter = $('#counter').text();
-
-  var h = parseInt(textInCounter.match(/[0-9]+(?=h)/));
-  var m = parseInt(textInCounter.match(/[0-9]+(?=m)/));
-  var s = parseInt(textInCounter.match(/[0-9]+(?=s)/));
-
-  return calculateSeconds(h, m, s);
-}
-
-function generateRandomTimeFromMinuteRange() {
-  var min = parseFloat($('#lower-random-interval-limit').val());
-  var max = parseFloat($('#upper-random-interval-limit').val());
-
-  var minSeconds = Math.round(min * 60);
-  var maxSeconds = Math.round(max * 60);
-
-  return Math.floor(Math.random() * (maxSeconds - minSeconds + 1)) + minSeconds;
 }
