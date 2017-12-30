@@ -1,14 +1,15 @@
-//SCUM DOCKER
+//TODO should put error messages in otherwise hidden divs just above their target element; this allows for multiple error messages to appear at once, and keeps only
+//hats in the box above the color
+//remove error messages in masse if there is a pass
 
 $(document).ready(function(){
   $('#functionality').prop("usingFixedSequence", true);
   }
 );
 
-
 $('#btn-for-starting-fixed-sequence').on("click", function() {
+  //bitwise & will not shortcircuit if first operand is false, thus allowing for both checks and error messages to appear
   if (areTimeFormsValid() & isSequenceFormValid()) {
-    removeRedBorderFromDiv();
     prepareButtonsAndAttributesForStart();
     var sequence, seconds, hat;
 
@@ -30,11 +31,15 @@ $('#btn-for-starting-fixed-sequence').on("click", function() {
   }
 });
 
-//unsorted
+
+function areTimeFormsValid() {
+  return isFixedIntervalFormValid() & isRandomIntervalFormValid()
+}
+
 function isSequenceFormValid(){
   if (isSequenceTextboxEmpty()){
     giveDivRedBorder("#fixed-sequence-instructions");
-    postMessageToUser("No sequence given");
+    displayErrorMessageForDiv("#fixed-sequence-error-message", 'No sequence given');
     return false;
   }
 
@@ -42,72 +47,16 @@ function isSequenceFormValid(){
   jQuery.trim(sequence);
   var regexPattern = /(red|white|blue|black|yellow|green|,| )+/g;
   var matches = sequence.match(regexPattern);
-  
-  if (matches[0].length != sequence.length){
+
+  if (matches == null || matches[0].length != sequence.length){
     giveDivRedBorder("#fixed-sequence-instructions");
-    postMessageToUser("Unrecognized hats");
+    displayErrorMessageForDiv("#fixed-sequence-error-message", 'Unrecognized hats');
     return false;
   }
 
-  return true;
-
-}
-
-function areTimeFormsValid() {
-  //bitwise & will not shortcircuit if first operand is false, thus allowing for both divs to get red border
-  return isFixedIntervalFormValid() & isRandomIntervalFormValid()
-}
-
-function isFixedIntervalFormValid() {
-  var hoursEmpty = $('#hours').val() === "";
-  var minutesEmpty = $('#minutes').val() === "";
-  var secondsEmpty = $('#seconds').val() === "";
-
-  if (hoursEmpty || minutesEmpty || secondsEmpty) {
-    $('#message').val('Fill all fields');
-    giveDivRedBorder('#fixed-time');
-    return false;
-  }
+  removeErrorIndicatorsForFixedIntervalForm();
   return true;
 }
-
-function isRandomIntervalFormValid() {
-  var lowerLimit = $('#lower-random-interval-limit').val();
-  var upperLimit = $('#upper-random-interval-limit').val();
-
-  if (lowerLimit === "" || upperLimit === "") {
-    $('#message').val('Fill all fields');
-    giveDivRedBorder('#random-time');
-    return false;
-  }
-
-  if (lowerLimit >= upperLimit) {
-    $('#message').val('Lower < Upper!');
-    giveDivRedBorder('#random-time');
-    return false;
-  }
-  return true;
-}
-
-function giveDivRedBorder(divId){
-  $(divId).css('border', '2px solid red');
-}
-
-function removeRedBorderFromDiv(){
-  $('.canHaveErrors').css('border', 0);
-}
-
-function isSequenceTextboxEmpty() {
-  var content = $('#sequence').val();
-  jQuery.trim(content);
-  return content.length === 0;
-}
-
-function postMessageToUser(string) {
-  $('#message').val(string);
-}
-
-
 
 function prepareButtonsAndAttributesForStart() {
   disableStartBtn();
@@ -115,44 +64,6 @@ function prepareButtonsAndAttributesForStart() {
   enableStopBtn();
   enablePauseBtn();
   removeStoppedAttr();
-}
-
-function disableStartBtn() {
-  $('#btn-for-starting-fixed-sequence').prop('disabled', true);
-  $('#btn-for-starting-random-sequence').prop('disabled', true);
-}
-
-function enableStartBtn() {
-  $('#btn-for-starting-fixed-sequence').prop('disabled', false);
-  $('#btn-for-starting-random-sequence').prop('disabled', false);
-}
-
-function disableSkipBtn() {
-  $('#skip-btn').prop('disabled', true);
-}
-
-function enableSkipBtn() {
-  $('#skip-btn').prop('disabled', false);
-}
-
-function disableStopBtn() {
-  $('#stop-btn').prop('disabled', true);
-}
-
-function enableStopBtn() {
-  $('#stop-btn').prop('disabled', false);
-}
-
-function disablePauseBtn() {
-  $('#pause-btn').prop('disabled', true);
-}
-
-function enablePauseBtn() {
-  $('#pause-btn').prop('disabled', false);
-}
-
-function removeStoppedAttr() {
-  $('#stop-btn').removeAttr('stopped');
 }
 
 function isCounterPaused() {
@@ -203,12 +114,6 @@ function getTotalSecondsFromFixedIntervalForm() {
   return calculateSeconds(h, m, s);
 }
 
-function calculateSeconds(hours, minutes, seconds) {
-  seconds += minutes * 60;
-  seconds += hours * 60 * 60;
-  return seconds;
-}
-
 function generateRandomTimeFromMinuteRange() {
   var min = parseFloat($('#lower-random-interval-limit').val());
   var max = parseFloat($('#upper-random-interval-limit').val());
@@ -233,6 +138,170 @@ function displayHatAndPassTimeToCountdown(hat, seconds) {
   dingStartBell();
   isUsingFixedSequence() ? countdownForFixedSequence(seconds) : countdownForRandomSequence(seconds)
 }
+//
+
+function displayErrorMessageForDiv(divId, message){
+  $(divId).text(message);
+}
+
+function isFixedIntervalFormValid() {
+  var h = $('#hours').val();
+  var m = $('#minutes').val();
+  var s = $('#seconds').val();
+
+  var hoursEmpty =  h === "";
+  var minutesEmpty = m === "";
+  var secondsEmpty = s === "";
+
+  if (hoursEmpty || minutesEmpty || secondsEmpty) {
+    displayErrorMessageForDiv("#fixed-time-error-message", 'Fill all fields');
+    giveDivRedBorder('#fixed-time');
+    return false;
+  }
+
+  if (h<0||m<0||s<0){
+    displayErrorMessageForDiv("#fixed-time-error-message", 'No negative time');
+    giveDivRedBorder('#fixed-time');
+    return false;
+  }
+
+  removeErrorIndicatorsForFixedIntervalForm();
+  return true;
+}
+
+function removeErrorMessageFromDiv(divId){
+  $(divId).text("");
+}
+
+function removeErrorIndicatorsForRandomIntervalForm(){
+  removeRedBorderFromDiv("#random-time");
+  removeErrorMessageFromDiv("#random-time-error-message");
+}
+
+
+function removeErrorIndicatorsForFixedIntervalForm(){
+  removeRedBorderFromDiv("#fixed-time");
+  removeErrorMessageFromDiv("#fixed-time-error-message");
+}
+
+function isRandomIntervalFormValid() {
+  var lowerLimit = $('#lower-random-interval-limit').val();
+  var upperLimit = $('#upper-random-interval-limit').val();
+
+  if (lowerLimit === "" || upperLimit === "") {
+    displayErrorMessageForDiv("#random-time-error-message", 'Fill all fields');
+    giveDivRedBorder('#random-time');
+    return false;
+  }
+
+  if (lowerLimit<0||upperLimit<0){
+    displayErrorMessageForDiv("#random-time-error-message", 'No negative time');
+    giveDivRedBorder('#random-time');
+    return false;
+  }
+
+
+  if (lowerLimit >= upperLimit) {
+    displayErrorMessageForDiv("#random-time-error-message", 'Lower < Upper!');
+    giveDivRedBorder('#random-time');
+    return false;
+  }
+
+  removeErrorIndicatorsForRandomIntervalForm();
+  return true;
+}
+
+function removeErrorIndicatorsForFixedIntervalForm(){
+  removeRedBorderFromDiv("#fixed-sequence-instructions");
+  removeErrorMessageFromDiv("#fixed-sequence-error-message");
+}
+
+
+
+function giveDivRedBorder(divId){
+  $(divId).css('border', '2px solid red');
+}
+
+function removeRedBorderFromDiv(divId){
+  $(divId).css('border', 0);
+}
+
+function isSequenceTextboxEmpty() {
+  var content = $('#sequence').val();
+  jQuery.trim(content);
+  return content.length === 0;
+}
+
+function postMessageToUser(string) {
+  $('#message').val(string);
+}
+
+
+
+
+
+function disableStartBtn() {
+  $('#btn-for-starting-fixed-sequence').prop('disabled', true);
+  $('#btn-for-starting-random-sequence').prop('disabled', true);
+}
+
+function enableStartBtn() {
+  $('#btn-for-starting-fixed-sequence').prop('disabled', false);
+  $('#btn-for-starting-random-sequence').prop('disabled', false);
+}
+
+function disableSkipBtn() {
+  $('#skip-btn').prop('disabled', true);
+}
+
+function enableSkipBtn() {
+  $('#skip-btn').prop('disabled', false);
+}
+
+function disableStopBtn() {
+  $('#stop-btn').prop('disabled', true);
+}
+
+function enableStopBtn() {
+  $('#stop-btn').prop('disabled', false);
+}
+
+function disablePauseBtn() {
+  $('#pause-btn').prop('disabled', true);
+}
+
+function enablePauseBtn() {
+  $('#pause-btn').prop('disabled', false);
+}
+
+function removeStoppedAttr() {
+  $('#stop-btn').removeAttr('stopped');
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function calculateSeconds(hours, minutes, seconds) {
+  seconds += minutes * 60;
+  seconds += hours * 60 * 60;
+  return seconds;
+}
+
+
+
+
 
 function setHatColorOnPage(color) {
   $('#hat').css('background-color', color);
@@ -345,7 +414,7 @@ function getSequenceAttrFromSequenceTextbox() {
 
 $('#btn-for-starting-random-sequence').on("click", function() {
   if (areTimeFormsValid()) {
-    removeRedBorderFromDiv();
+    //removeRedBorderFromDiv();
     prepareButtonsAndAttributesForStart();
 
     var hatNumber, hat, seconds;

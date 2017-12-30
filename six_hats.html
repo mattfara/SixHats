@@ -39,6 +39,7 @@
 						<fieldset>
 							<legend id="options-form-legend">Time to switch</legend>
 							<div id="fixed-time" class="margin-to-bottom canHaveErrors">
+								<p id="fixed-time-error-message" class="errorMsg"></p>
 								<input id="fixed-interval-radio" type="radio" name="interval-type" value="fixed-interval" checked>
 								<span>Fixed Interval</span><br>
 								<label for="hours">H: </label>
@@ -50,6 +51,7 @@
 								</input>
 							</div>
 							<div id="random-time" class="canHaveErrors">
+								<p id="random-time-error-message" class="errorMsg"></p>
 								<input id="random-interval-radio" type="radio" name="interval-type" value="random-interval" >
 								<span>Random interval</span> <br> between <input type="number" placeholder="10" id="lower-random-interval-limit" class="time-input" value="1" required/> and <input type="number" placeholder="90" id="upper-random-interval-limit" class="time-input" value="2" required
 								/>
@@ -83,6 +85,7 @@
 								Sequence
 							</legend>
 							<div id="fixed-sequence-instructions" class="canHaveErrors">
+								<p id="fixed-sequence-error-message" class="errorMsg"></p>
 								<p>Click boxes or type below</p>
 								<input type="text" id="sequence" placeholder="Example: blue, white, red, green, black, white, blue" pattern="[Rr]ed|[Ww]hite|[Gg]reen|[Yy]ellow|[Bb]lack|[Bb]lue"
 								/>

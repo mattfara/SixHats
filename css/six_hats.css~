@@ -65,7 +65,4 @@ h3{text-decoration: underline;}
 
 .correct-for-label-size{margin-left:2px;}
 
-.errorMsg{
-	color: red;
-	font-weight: bold;		
-}
+.errorMsg{color: red;}
