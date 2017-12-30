@@ -1,3 +1,5 @@
+//SCUM DOCKER
+
 $(document).ready(function(){
   $('#functionality').prop("usingFixedSequence", true);
   }
@@ -5,7 +7,7 @@ $(document).ready(function(){
 
 
 $('#btn-for-starting-fixed-sequence').on("click", function() {
-  if (areFormsValid()) {
+  if (areTimeFormsValid()) {
     removeRedBorderFromDiv();
     if (isSequenceTextboxEmpty()) {
       postMessageToUser("Sequence empty");
@@ -33,7 +35,29 @@ $('#btn-for-starting-fixed-sequence').on("click", function() {
   }
 });
 
-function areFormsValid() {
+//unsorted
+function isSequenceFormValid(){
+  if (isSequenceTextboxEmpty()){
+    giveDivRedBorder(#fixed-sequence-instructions);
+    postMessageToUser("No sequence given");
+    return false;
+  }
+
+  var sequence = getSequenceFromTextboxVal();
+  var regexPattern = new RegExp("([\s\S]*?)(red|white|blue|black|yellow|green|,| )");
+  var matches = sequence.match(regexPattern);
+
+  if (match[0].length != 0){
+    giveDivRedBorder(#fixed-sequence-instructions);
+    postMessageToUser("Unrecognized hats");
+    return false;
+  }
+
+  return true;
+
+}
+
+function areTimeFormsValid() {
   //bitwise & will not shortcircuit if first operand is false, thus allowing for both divs to get red border
   return isFixedIntervalFormValid() & isRandomIntervalFormValid()
 }
@@ -214,6 +238,10 @@ function displayHatAndPassTimeToCountdown(hat, seconds) {
   isUsingFixedSequence() ? countdownForFixedSequence(seconds) : countdownForRandomSequence(seconds)
 }
 
+function setHatColorOnPage(color) {
+  $('#hat').css('background-color', color);
+}
+
 function setHatMonikerOnPage(hat){
   switch(hat){
     case "red":
@@ -297,8 +325,30 @@ function countdownForFixedSequence(seconds) {
   }, 1000);
 }
 
+function wasSkipClicked() {
+  return document.getElementById("skip-btn").hasAttribute("skip");
+}
+
+function wasStopBtnClicked() {
+  return document.getElementById("stop-btn").hasAttribute("stopped");
+}
+
+function calculateCounterValuesAndDisplay(count){
+  var h, m, s;
+
+  h = Math.floor((count % (60 * 60 * 24)) / (60 * 60));
+  m = Math.floor((count % (60 * 60)) / (60));
+  s = Math.floor(count % 60);
+
+  $('#counter').text(h + "h " + m + "m " + s + "s ");
+}
+
+function getSequenceAttrFromSequenceTextbox() {
+  return $('#sequence').attr("sequenceArray");
+}
+
 $('#btn-for-starting-random-sequence').on("click", function() {
-  if (areFormsValid()) {
+  if (areTimeFormsValid()) {
     removeRedBorderFromDiv();
     prepareButtonsAndAttributesForStart();
 
@@ -319,6 +369,32 @@ $('#btn-for-starting-random-sequence').on("click", function() {
     displayHatAndPassTimeToCountdown(hat, seconds);
   }
 });
+
+function randomlySelectNumberForHat() {
+  return Math.floor((Math.random() * 6) + 1);
+}
+
+function getHatByNumber(n) {
+  switch (n) {
+    case 1:
+      return 'white';
+    case 2:
+      return 'red';
+    case 3:
+      return 'green';
+    case 4:
+      return 'blue';
+    case 5:
+      return 'yellow';
+    case 6:
+      return 'black';
+    default:
+      console.log('unrecognized integer');
+      return;
+  }
+  console.log("the switch wasn't hit...check for errors");
+  return;
+}
 
 function countdownForRandomSequence(seconds) {
   var count = seconds + 1;
@@ -352,32 +428,9 @@ function countdownForRandomSequence(seconds) {
   }, 1000);
 }
 
-
-
-
-
-function calculateCounterValuesAndDisplay(count){
-  var h, m, s;
-
-  h = Math.floor((count % (60 * 60 * 24)) / (60 * 60));
-  m = Math.floor((count % (60 * 60)) / (60));
-  s = Math.floor(count % 60);
-
-  $('#counter').text(h + "h " + m + "m " + s + "s ");
+function turnOffSkip() {
+  $('#skip-btn').removeAttr("skip");
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 $('#fixed-time').on("click", function() {
   $('#fixed-interval-radio').prop('checked', true);
@@ -413,9 +466,7 @@ function addColorToSequenceTextbox(color) {
 
 
 
-function getSequenceAttrFromSequenceTextbox() {
-  return $('#sequence').attr("sequenceArray");
-}
+
 
 $('#red-square').on("click", function() {
   addColorToSequenceTextbox("red");
@@ -445,9 +496,7 @@ $('#white-square').on("click", function() {
 
 
 
-function wasStopBtnClicked() {
-  return document.getElementById("stop-btn").hasAttribute("stopped");
-}
+
 
 function setSequenceTextboxAttr(sequenceArray) {
   $('#sequence').attr("sequenceArray", sequenceArray);
@@ -462,10 +511,12 @@ function reset() {
   disableStopBtn();
   disablePauseBtn();
   disableSkipBtn();
+  makeSequenceTextboxWritable();
 }
 
 $('#stop-btn').on("click", function() {
   reset();
+  makeSequenceTextboxWritable();
   dingEndBell();
   postMessageToUser("Stopped");
 });
@@ -496,13 +547,9 @@ $('#pause-btn').on("click", function() {
 
 
 
-function wasSkipClicked() {
-  return document.getElementById("skip-btn").hasAttribute("skip");
-}
 
-function turnOffSkip() {
-  $('#skip-btn').removeAttr("skip");
-}
+
+
 
 $('#hideCounter').on("click", function() {
   $('#counter').toggle();
@@ -519,31 +566,9 @@ function randomlyGrabHat() {
   setHatMonikerOnPage(hat);
 }
 
-function getHatByNumber(n) {
-  switch (n) {
-    case 1:
-      return 'white';
-    case 2:
-      return 'red';
-    case 3:
-      return 'green';
-    case 4:
-      return 'blue';
-    case 5:
-      return 'yellow';
-    case 6:
-      return 'black';
-    default:
-      console.log('unrecognized integer');
-      return;
-  }
-  console.log("the switch wasn't hit...check for errors");
-  return;
-}
 
-function setHatColorOnPage(color) {
-  $('#hat').css('background-color', color);
-}
+
+
 
 
 $('#showSequenceOptions').on("click", function() {
@@ -581,12 +606,8 @@ $('#getRandomHat').on("click", function() {
 
 
 
-function randomlySelectNumberForHat() {
-  return Math.floor((Math.random() * 6) + 1);
-}
-
 
 
 function makeSequenceTextboxWritable() {
-  $('#sequence').prop('readonly', true);
+  $('#sequence').prop('readonly', false);
 }
