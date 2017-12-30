@@ -7,31 +7,26 @@ $(document).ready(function(){
 
 
 $('#btn-for-starting-fixed-sequence').on("click", function() {
-  if (areTimeFormsValid()) {
+  if (areTimeFormsValid() & isSequenceFormValid()) {
     removeRedBorderFromDiv();
-    if (isSequenceTextboxEmpty()) {
-      postMessageToUser("Sequence empty");
-      giveDivRedBorder('#fixed-sequence-instructions');
+    prepareButtonsAndAttributesForStart();
+    var sequence, seconds, hat;
+
+    if (isCounterPaused()) {
+      hat = getCurrentHatColor();
+      seconds = getTotalSecondsFromCounter() - 1;
+      unpause();
     } else {
-      prepareButtonsAndAttributesForStart();
-      var sequence, seconds, hat;
-
-      if (isCounterPaused()) {
-        hat = getCurrentHatColor();
-        seconds = getTotalSecondsFromCounter() - 1;
-        unpause();
-      } else {
-        sequence = getSequenceFromTextboxVal();
-        sequence = standardizeSequenceAndParseToArray(sequence);
-        hat = sequence.shift();
-        saveSequenceAttrOnSequenceTextbox(sequence);
-        seconds = isFixedIntervalChecked() ? getTotalSecondsFromFixedIntervalForm() : generateRandomTimeFromMinuteRange()
-      }
-
-      clearMessageToUser();
-      makeSequenceTextboxReadOnly();
-      displayHatAndPassTimeToCountdown(hat, seconds);
+      sequence = getSequenceFromTextboxVal();
+      sequence = standardizeSequenceAndParseToArray(sequence);
+      hat = sequence.shift();
+      saveSequenceAttrOnSequenceTextbox(sequence);
+      seconds = isFixedIntervalChecked() ? getTotalSecondsFromFixedIntervalForm() : generateRandomTimeFromMinuteRange()
     }
+
+    clearMessageToUser();
+    makeSequenceTextboxReadOnly();
+    displayHatAndPassTimeToCountdown(hat, seconds);
   }
 });
 
