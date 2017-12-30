@@ -33,17 +33,18 @@ $('#btn-for-starting-fixed-sequence').on("click", function() {
 //unsorted
 function isSequenceFormValid(){
   if (isSequenceTextboxEmpty()){
-    giveDivRedBorder(#fixed-sequence-instructions);
+    giveDivRedBorder("#fixed-sequence-instructions");
     postMessageToUser("No sequence given");
     return false;
   }
 
   var sequence = getSequenceFromTextboxVal();
-  var regexPattern = new RegExp("([\s\S]*?)(red|white|blue|black|yellow|green|,| )");
+  jQuery.trim(sequence);
+  var regexPattern = /(red|white|blue|black|yellow|green|,| )+/g;
   var matches = sequence.match(regexPattern);
-
-  if (match[0].length != 0){
-    giveDivRedBorder(#fixed-sequence-instructions);
+  
+  if (matches[0].length != sequence.length){
+    giveDivRedBorder("#fixed-sequence-instructions");
     postMessageToUser("Unrecognized hats");
     return false;
   }
