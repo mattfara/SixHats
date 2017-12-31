@@ -43,12 +43,12 @@ function isSequenceFormValid(){
     return false;
   }
 
-  var sequence = getSequenceFromTextboxVal();
+  var sequenceFormInput = getSequenceFromTextboxVal();
   jQuery.trim(sequence);
   var regexPattern = /(red|white|blue|black|yellow|green|,| )+/g;
-  var matches = sequence.match(regexPattern);
+  var matches = sequenceFormInput.match(regexPattern);
 
-  if (matches == null || matches[0].length != sequence.length){
+  if (matches == null || matches.toString().length != sequenceFormInput.length){
     giveDivRedBorder("#fixed-sequence-instructions");
     displayErrorMessageForDiv("#fixed-sequence-error-message", 'Unrecognized hats');
     return false;
