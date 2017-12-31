@@ -1,6 +1,4 @@
-//TODO should put error messages in otherwise hidden divs just above their target element; this allows for multiple error messages to appear at once, and keeps only
-//hats in the box above the color
-//remove error messages in masse if there is a pass
+//TODO check line widths
 
 $(document).ready(function(){
   $('#functionality').prop("usingFixedSequence", true);
@@ -22,7 +20,8 @@ $('#btn-for-starting-fixed-sequence').on("click", function() {
       sequence = standardizeSequenceAndParseToArray(sequence);
       hat = sequence.shift();
       saveSequenceAttrOnSequenceTextbox(sequence);
-      seconds = isFixedIntervalChecked() ? getTotalSecondsFromFixedIntervalForm() : generateRandomTimeFromMinuteRange()
+      seconds = isFixedIntervalChecked() ? getTotalSecondsFromFixedIntervalForm() :
+                                            generateRandomTimeFromMinuteRange()
     }
 
     clearMessageToUser();
@@ -30,7 +29,6 @@ $('#btn-for-starting-fixed-sequence').on("click", function() {
     displayHatAndPassTimeToCountdown(hat, seconds);
   }
 });
-
 
 function areTimeFormsValid() {
   return isFixedIntervalFormValid() & isRandomIntervalFormValid()
@@ -136,12 +134,8 @@ function displayHatAndPassTimeToCountdown(hat, seconds) {
   setHatColorOnPage(hat);
   setHatMonikerOnPage(hat);
   dingStartBell();
-  isUsingFixedSequence() ? countdownForFixedSequence(seconds) : countdownForRandomSequence(seconds)
-}
-//
-
-function displayErrorMessageForDiv(divId, message){
-  $(divId).text(message);
+  isUsingFixedSequence() ? countdownForFixedSequence(seconds) :
+                            countdownForRandomSequence(seconds)
 }
 
 function isFixedIntervalFormValid() {
@@ -167,21 +161,6 @@ function isFixedIntervalFormValid() {
 
   removeErrorIndicatorsForFixedIntervalForm();
   return true;
-}
-
-function removeErrorMessageFromDiv(divId){
-  $(divId).text("");
-}
-
-function removeErrorIndicatorsForRandomIntervalForm(){
-  removeRedBorderFromDiv("#random-time");
-  removeErrorMessageFromDiv("#random-time-error-message");
-}
-
-
-function removeErrorIndicatorsForFixedIntervalForm(){
-  removeRedBorderFromDiv("#fixed-time");
-  removeErrorMessageFromDiv("#fixed-time-error-message");
 }
 
 function isRandomIntervalFormValid() {
@@ -211,34 +190,46 @@ function isRandomIntervalFormValid() {
   return true;
 }
 
-function removeErrorIndicatorsForFixedIntervalForm(){
-  removeRedBorderFromDiv("#fixed-sequence-instructions");
-  removeErrorMessageFromDiv("#fixed-sequence-error-message");
-}
-
-
-
-function giveDivRedBorder(divId){
-  $(divId).css('border', '2px solid red');
-}
-
-function removeRedBorderFromDiv(divId){
-  $(divId).css('border', 0);
-}
-
 function isSequenceTextboxEmpty() {
   var content = $('#sequence').val();
   jQuery.trim(content);
   return content.length === 0;
 }
 
+function giveDivRedBorder(divId){
+  $(divId).css('border', '2px solid red');
+}
+
+function displayErrorMessageForDiv(divId, message){
+  $(divId).text(message);
+}
+
+function removeErrorMessageFromDiv(divId){
+  $(divId).text("");
+}
+
+function removeErrorIndicatorsForRandomIntervalForm(){
+  removeRedBorderFromDiv("#random-time");
+  removeErrorMessageFromDiv("#random-time-error-message");
+}
+
+function removeErrorIndicatorsForFixedIntervalForm(){
+  removeRedBorderFromDiv("#fixed-time");
+  removeErrorMessageFromDiv("#fixed-time-error-message");
+}
+
+function removeErrorIndicatorsForFixedIntervalForm(){
+  removeRedBorderFromDiv("#fixed-sequence-instructions");
+  removeErrorMessageFromDiv("#fixed-sequence-error-message");
+}
+
+function removeRedBorderFromDiv(divId){
+  $(divId).css('border', 0);
+}
+
 function postMessageToUser(string) {
   $('#message').val(string);
 }
-
-
-
-
 
 function disableStartBtn() {
   $('#btn-for-starting-fixed-sequence').prop('disabled', true);
@@ -278,30 +269,11 @@ function removeStoppedAttr() {
   $('#stop-btn').removeAttr('stopped');
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 function calculateSeconds(hours, minutes, seconds) {
   seconds += minutes * 60;
   seconds += hours * 60 * 60;
   return seconds;
 }
-
-
-
-
 
 function setHatColorOnPage(color) {
   $('#hat').css('background-color', color);
@@ -350,7 +322,7 @@ function dingEndBell() {
 function isUsingFixedSequence(){
   return $('#functionality').prop("usingFixedSequence") == true;
 }
-//TODO finish formatting functions -- stopped here
+
 function countdownForFixedSequence(seconds) {
 
   var count = seconds + 1;
@@ -374,7 +346,8 @@ function countdownForFixedSequence(seconds) {
         var sequence = getSequenceAttrFromSequenceTextbox();
         sequence = standardizeSequenceAndParseToArray(sequence);
 
-        var seconds = isFixedIntervalChecked() ? getTotalSecondsFromFixedIntervalForm() : generateRandomTimeFromMinuteRange()
+        var seconds = isFixedIntervalChecked() ? getTotalSecondsFromFixedIntervalForm() :
+                                                  generateRandomTimeFromMinuteRange()
         turnOffSkip();
         if (isSequenceAttrEmpty()) {
           reset();
@@ -414,7 +387,7 @@ function getSequenceAttrFromSequenceTextbox() {
 
 $('#btn-for-starting-random-sequence').on("click", function() {
   if (areTimeFormsValid()) {
-    //removeRedBorderFromDiv();
+
     prepareButtonsAndAttributesForStart();
 
     var hatNumber, hat, seconds;
@@ -426,7 +399,8 @@ $('#btn-for-starting-random-sequence').on("click", function() {
     } else {
       hatNumber = randomlySelectNumberForHat();
       hat = getHatByNumber(hatNumber);
-      seconds = isFixedIntervalChecked() ? getTotalSecondsFromFixedIntervalForm() : generateRandomTimeFromMinuteRange()
+      seconds = isFixedIntervalChecked() ? getTotalSecondsFromFixedIntervalForm() :
+                                            generateRandomTimeFromMinuteRange()
     }
 
     clearMessageToUser();
@@ -484,7 +458,8 @@ function countdownForRandomSequence(seconds) {
         hatNumber = randomlySelectNumberForHat();
         hat = getHatByNumber(hatNumber);
 
-        seconds = isFixedIntervalChecked() ? getTotalSecondsFromFixedIntervalForm() : generateRandomTimeFromMinuteRange()
+        seconds = isFixedIntervalChecked() ? getTotalSecondsFromFixedIntervalForm() :
+                                              generateRandomTimeFromMinuteRange()
         turnOffSkip();
         clearMessageToUser();
         displayHatAndPassTimeToCountdown(hat, seconds);
@@ -505,33 +480,16 @@ $('#random-time').on("click", function() {
   $('#random-interval-radio').prop('checked', true);
 });
 
-
-
-
-
-
-
-
-
-
 function isSequenceAttrEmpty() {
   var sequenceArray = getSequenceAttrFromSequenceTextbox();
   return sequenceArray.length === 0;
 }
-
-
 
 function addColorToSequenceTextbox(color) {
   var currentContent = getSequenceFromTextboxVal();
   var updatedContent = isSequenceTextboxEmpty() ? color : currentContent + ", " + color
   $('#sequence').val(updatedContent);
 }
-
-
-
-
-
-
 
 $('#red-square').on("click", function() {
   addColorToSequenceTextbox("red");
@@ -557,12 +515,6 @@ $('#white-square').on("click", function() {
   addColorToSequenceTextbox("white");
 });
 
-
-
-
-
-
-
 function setSequenceTextboxAttr(sequenceArray) {
   $('#sequence').attr("sequenceArray", sequenceArray);
 }
@@ -586,8 +538,6 @@ $('#stop-btn').on("click", function() {
   postMessageToUser("Stopped");
 });
 
-
-
 function resetCounter() {
   $('#counter').text("0h 0m 0s");
 }
@@ -608,21 +558,9 @@ $('#pause-btn').on("click", function() {
   postMessageToUser("Paused");
 });
 
-
-
-
-
-
-
-
-
 $('#hideCounter').on("click", function() {
   $('#counter').toggle();
 });
-
-
-
-
 
 function randomlyGrabHat() {
   var hatNumber = randomlySelectNumberForHat();
@@ -630,11 +568,6 @@ function randomlyGrabHat() {
   setHatColorOnPage(hat);
   setHatMonikerOnPage(hat);
 }
-
-
-
-
-
 
 $('#showSequenceOptions').on("click", function() {
   $('#functionality').text("Sequence of Hats");
@@ -662,16 +595,11 @@ $('#showTimedOptions').on("click", function() {
   $('#random-sequence-instructions').show();
 });
 
-
 $('#getRandomHat').on("click", function() {
   reset();
   clearMessageToUser();
   randomlyGrabHat();
 });
-
-
-
-
 
 function makeSequenceTextboxWritable() {
   $('#sequence').prop('readonly', false);
