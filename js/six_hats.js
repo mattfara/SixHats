@@ -46,9 +46,9 @@ function isSequenceFormValid(){
   var sequenceFormInput = getSequenceFromTextboxVal();
   jQuery.trim(sequence);
   var regexPattern = /(red|white|blue|black|yellow|green|,| )+/g;
-  var matches = sequenceFormInput.match(regexPattern);
+  var matches = sequenceFormInput.match(regexPattern).toString();
 
-  if (matches == null || matches.toString().length != sequenceFormInput.length){
+  if (matches == null || matches.length != sequenceFormInput.length){
     giveDivRedBorder("#fixed-sequence-instructions");
     displayErrorMessageForDiv("#fixed-sequence-error-message", 'Unrecognized hats');
     return false;
