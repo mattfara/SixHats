@@ -45,7 +45,8 @@ h3{text-decoration: underline;}
 #blue-square{background:blue;}
 #white-square{background:white;}
 
-#hideCounterLabel{font-weight: normal;}
+/*fix name project wide*/
+#hide-counter-label{font-weight: normal;}
 /*#hiderCounter{margin-left: 40px;}*/
 #message{
 	width:100%;
@@ -65,7 +66,8 @@ h3{text-decoration: underline;}
 
 .correct-for-label-size{margin-left:2px;}
 
-.errorMsg{
+/*fix name project wide*/
+.error-msg{
 	color: red;
-	font-weight: bold;		
+	font-weight: bold;
 }
